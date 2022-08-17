@@ -1,27 +1,32 @@
-import React, {useState} from 'react'
+import React, {useState, useEffect} from 'react'
 import primeNumberSumCalculator from './lib/prime_numbers';
+import { debounce } from 'lodash';
+
 import './App.css';
 
 function App() {
-  const [state,setState] = useState({
-    input: 0,
-    output: 0
-  })
+  const [input,setInput] = useState(0);
+  const [output,setOutput] = useState(0);
+  
+  const calculateSum = debounce((value) => {
+    setOutput(primeNumberSumCalculator(value))
+  },3000);
 
+  useEffect(() => {
+    calculateSum.cancel()
+  },[calculateSum])
   return (
     <div className="App">
       <input
-        value={state.input}
+        value={input}
         onChange={(e) => {
-          setState({
-            input: e.target.value,
-            output: primeNumberSumCalculator(e.target.value)
-          })
+          setInput(e.target.value)
+          calculateSum(e.target.value)
         }}
         type='number'
       />
       <div>
-        {state.output}
+        {output}
       </div>
     </div>
   );
